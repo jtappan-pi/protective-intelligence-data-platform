@@ -1,0 +1,22 @@
+# --- secrets & local config: NEVER commit ---
+.env
+notes.txt
+temp.py
+
+# --- raw data: ACLED Open tier prohibits redistribution ---
+data/
+*.csv
+*.parquet
+*.json.gz
+exports/
+
+# --- python noise ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- editor/os noise ---
+.vscode/
+.idea/
+.DS_Store

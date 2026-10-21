@@ -1,0 +1,29 @@
+services:
+  db:
+    # postgis/postgis = standard Postgres + the PostGIS geospatial extension.
+    # You won't need PostGIS in phase 1 (we'll write distance math in plain SQL
+    # on purpose, for learning), but having it installed means the "production
+    # upgrade path" is one CREATE EXTENSION away — a good interview talking point.
+    image: postgis/postgis:16-3.4
+    container_name: pi_platform_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pi_analyst}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-pi_platform}
+    ports:
+      - "5433:5432"
+    volumes:
+      # Named volume: the database survives `docker compose down` but is NOT
+      # a file in your repo, so raw ACLED data never touches git.
+      - pgdata:/var/lib/postgresql/data
+      # Anything in this folder runs automatically on FIRST container start,
+      # in filename order. That's why the SQL files are numbered.
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pi_analyst} -d ${POSTGRES_DB:-pi_platform}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
